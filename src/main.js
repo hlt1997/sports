@@ -13,7 +13,7 @@ Vue.use(MintUI);
 Vue.component("my-footer", MyFooter);
 Vue.component("my-header", MyHeader);
 Vue.config.productionTip = false;
-axios.defaults.baseURL = "http://127.0.0.1:3000";
+axios.defaults.baseURL = "/";
 Vue.prototype.axios = axios;
 new Vue({
   router,
