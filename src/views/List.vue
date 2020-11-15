@@ -21,7 +21,12 @@
         <router-link
           :to="{
             path: '/play',
-            query: { id: item.id, name: item.name, uname: item.ar[0].name },
+            query: {
+              id: item.id,
+              name: item.name,
+              uname: item.ar[0].name,
+              pic: item.al.picUrl,
+            },
           }"
         >
           <div>

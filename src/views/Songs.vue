@@ -22,17 +22,31 @@
     <ul class="list_music">
       <h2>全部({{ data.length }})</h2>
       <li v-for="(item, index) of data" :key="index">
-        <div>
-          <div class="center"><img :src="item.album.blurPicUrl" alt="" /></div>
-          <p>
-            <span>{{ item.name }}</span
-            ><br />
-            <span>{{ item.artists[0].name }}</span>
-          </p>
-        </div>
-        <div>
-          <img src="/images/play.png" alt="" />
-        </div>
+        <router-link
+          :to="{
+            path: '/play',
+            query: {
+              id: item.id,
+              name: item.name,
+              uname: item.artists[0].name,
+              pic: item.album.blurPicUrl,
+            },
+          }"
+        >
+          <div>
+            <div class="center">
+              <img :src="item.album.blurPicUrl" alt="" />
+            </div>
+            <p>
+              <span>{{ item.name }}</span
+              ><br />
+              <span>{{ item.artists[0].name }}</span>
+            </p>
+          </div>
+          <div>
+            <img src="/images/play.png" alt="" />
+          </div>
+        </router-link>
       </li>
     </ul>
     <!-- 歌曲列表结束 -->
@@ -95,17 +109,19 @@
   margin-bottom: 20px;
 }
 /* 每首歌曲容器 */
-.list_music > li {
+.list_music > li > a {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 15px 0;
+  color: black;
+  text-decoration: none;
 }
-.list_music > li > div:first-child {
+.list_music > li div:first-child {
   display: flex;
   align-items: center;
 }
-.list_music > li > div > p {
+.list_music > li div > p {
   font-size: 14px;
   margin-left: 15px;
 }
@@ -118,7 +134,7 @@
   width: 40px;
   height: 40px;
 }
-.list_music > li > div > p > span:last-child {
+.list_music > li div > p > span:last-child {
   font-size: 12px;
   display: inline-block;
   padding-top: 5px;
