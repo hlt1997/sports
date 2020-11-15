@@ -110,6 +110,28 @@ export default {
       console.log(res);
       this.result = res.data.result;
     });
+    // 判断用户登录状态
+    this.axios
+      .get("/login/status")
+      .then((res) => {
+        console.log(res);
+        if(res.data.code == 200){
+          this.$store.commit("logined");
+          localStorage.setItem("isLogined",1)
+        }
+      })
+      // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+        }
+         else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
   },
   // methods:{
   //   changed(){

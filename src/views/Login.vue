@@ -140,11 +140,14 @@ export default {
           })
           .then((res) => {
             console.log(res);
-            this.$router.push("/");
+            // 登录成功后，跳转到主页
+            if(res.data.status = 200){this.$router.push("/");}
+            
           })
           // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
           .catch((error) => {
             if (error.response) {
+              this.$toast({message:'手机号或密码错误'})
               console.log(error.response);
             }
             // else if (error.request) {
@@ -157,25 +160,8 @@ export default {
       }
     },
   },
-  mounted() {
-    this.axios
-      .get("/login/status")
-      .then((res) => {
-        console.log(res);
-      })
-      // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-        }
-        //  else if (error.request) {
-        //   console.log(error.request);
-        // } else {
-        //   console.log("Error", error.message);
-        // }
-        // console.log(error.config);
-      });
-  },
+  // 登录状态
+
 
   watch: {
     ischb() {

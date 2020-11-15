@@ -155,7 +155,12 @@ export default {
     this.axios.get("/recommend/songs").then((res) => {
       console.log(res);
       this.data = res.data.recommend;
-    });
+    })// 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+        }
+      });;
     let date = new Date();
     console.log(date.getMonth());
     console.log(date.getDate());
