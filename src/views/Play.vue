@@ -130,6 +130,7 @@
 }
 </style>
 <script>
+import { getSong, getLyric } from "../api/search.js";
 export default {
   data() {
     return {
@@ -153,83 +154,70 @@ export default {
     this.data = this.$route.query;
     console.log(this.data);
     // 发送请求获取歌曲url
-    this.axios
-      .get("/song/url?", {
-        params: {
-          id: this.data.id,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        this.url = res.data.data[0].url;
-      });
+    getSong(this.data.id).then((res) => {
+      console.log(res);
+      this.url = res.data.data[0].url;
+    });
     // 获取歌词信息
-
-    this.axios
-      .get("/lyric?", {
-        params: {
-          id: this.data.id,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        // 调用函数获取当前播放时长
-        // DOM更新之后再调用函数，防止异步渲染未完成时调用函数
-        this.$nextTick(() => {
-          this.addEventHandle();
-        });
-
-        // 获取到的原始歌词文本
-        let text = res.data.lrc.lyric;
-        // 用于保存歌词和对应时间的空对象
-        let lrc = {};
-        // 利用获取到的歌词内容自带的回车符切割
-        let lyrics = text.split("\n");
-        // 正则匹配时间
-        let reg = /\[\d*:\d*(\.|:)\d*]/g;
-        // for循环，利用正则得到歌词中对应的时间，及歌词内容
-        for (let i = 0; i < lyrics.length; i++) {
-          // 正则匹配到歌词文件中的对应时间
-          let timeRegArr = lyrics[i].match(reg);
-          // console.log(timeRegArr);
-          if (!timeRegArr) continue; // 跳过null
-          // console.log(timeRegArr);
-          // 获取时间
-          let t = timeRegArr[0];
-          // 正则匹配
-          // 获取分钟
-          let min = parseInt(
-            t
-              .match(/\[\d*/i)
-              .toString()
-              .slice(1)
-          );
-          // console.log(min);
-          // 获取秒  毫秒忽略不计
-          let sec = parseInt(
-            t
-              .match(/:\d*/i)
-              .toString()
-              .slice(1)
-          );
-          // console.log(sec);
-          // 完整时间 分钟转换为秒，加上秒数
-          let time = min * 60 + sec;
-          // 获取歌词内容
-          // 将歌词中的时间替换为空字符，保存到content中，就得到了只有歌词的
-          let content = lyrics[i].replace(timeRegArr, "");
-          // 将得到的每段歌词push到lrcs中，保存歌词内容
-          this.lrcs.push(content);
-          // 将lrc对象中的时间和歌词内容对应起来就得到了{12: "You love me no longer, I know and"} 这种形式的对象
-          lrc[time] = content;
-        }
-        // console.log(lrc);
-        // 赋值给lrcs 并遍历得到下标对应时间的数组,保存到allKeys中
-        this.lrcs = lrc;
-        for (let key in this.lrcs) {
-          this.allKeys.push(key);
-        }
+    getLyric(this.data.id).then((res) => {
+      console.log(res);
+      // 调用函数获取当前播放时长
+      // DOM更新之后再调用函数，防止异步渲染未完成时调用函数
+      this.$nextTick(() => {
+        this.addEventHandle();
       });
+
+      // 获取到的原始歌词文本
+      let text = res.data.lrc.lyric;
+      // 用于保存歌词和对应时间的空对象
+      let lrc = {};
+      // 利用获取到的歌词内容自带的回车符切割
+      let lyrics = text.split("\n");
+      // 正则匹配时间
+      let reg = /\[\d*:\d*(\.|:)\d*]/g;
+      // for循环，利用正则得到歌词中对应的时间，及歌词内容
+      for (let i = 0; i < lyrics.length; i++) {
+        // 正则匹配到歌词文件中的对应时间
+        let timeRegArr = lyrics[i].match(reg);
+        // console.log(timeRegArr);
+        if (!timeRegArr) continue; // 跳过null
+        // console.log(timeRegArr);
+        // 获取时间
+        let t = timeRegArr[0];
+        // 正则匹配
+        // 获取分钟
+        let min = parseInt(
+          t
+            .match(/\[\d*/i)
+            .toString()
+            .slice(1)
+        );
+        // console.log(min);
+        // 获取秒  毫秒忽略不计
+        let sec = parseInt(
+          t
+            .match(/:\d*/i)
+            .toString()
+            .slice(1)
+        );
+        // console.log(sec);
+        // 完整时间 分钟转换为秒，加上秒数
+        let time = min * 60 + sec;
+        // 获取歌词内容
+        // 将歌词中的时间替换为空字符，保存到content中，就得到了只有歌词的
+        let content = lyrics[i].replace(timeRegArr, "");
+        // 将得到的每段歌词push到lrcs中，保存歌词内容
+        this.lrcs.push(content);
+        // 将lrc对象中的时间和歌词内容对应起来就得到了{12: "You love me no longer, I know and"} 这种形式的对象
+        lrc[time] = content;
+      }
+      // console.log(lrc);
+      // 赋值给lrcs 并遍历得到下标对应时间的数组,保存到allKeys中
+      this.lrcs = lrc;
+      for (let key in this.lrcs) {
+        this.allKeys.push(key);
+      }
+    });
   },
   methods: {
     // 利用ref属性获取标签的当前播放时长

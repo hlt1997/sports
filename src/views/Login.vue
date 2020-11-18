@@ -82,6 +82,8 @@ a {
 }
 </style>
 <script>
+import { getLogin } from "../api/search";
+
 export default {
   data() {
     return {
@@ -129,25 +131,21 @@ export default {
       }
     },
     // 登录 当密码和手机号都验证成功后
+
     login() {
       if (this.handlePhone && this.handlePwd) {
-        this.axios
-          .get("/login/cellphone?", {
-            params: {
-              phone: this.phone,
-              password: this.password,
-            },
-          })
+        getLogin(this.phone, this.password)
           .then((res) => {
             console.log(res);
             // 登录成功后，跳转到主页
-            if(res.data.status = 200){this.$router.push("/");}
-            
+            if ((res.data.status = 200)) {
+              this.$router.push("/");
+            }
           })
           // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
           .catch((error) => {
             if (error.response) {
-              this.$toast({message:'手机号或密码错误'})
+              this.$toast({ message: "手机号或密码错误" });
               console.log(error.response);
             }
             // else if (error.request) {
@@ -161,7 +159,6 @@ export default {
     },
   },
   // 登录状态
-
 
   watch: {
     ischb() {

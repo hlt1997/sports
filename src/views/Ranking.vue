@@ -28,7 +28,7 @@
     <ul class="more">
       <li v-for="(item, index) of data" :key="index">
         <router-link :to="{ path: '/list', query: { id: item.id } }">
-          <img :src="item.coverImgUrl" alt="" />
+          <img v-lazy="item.coverImgUrl" alt="" />
           <span>{{ item.updateFrequency }}</span
           ><br />
           <span>{{ item.name }}</span>
@@ -111,6 +111,7 @@ h2 {
 }
 </style>
 <script>
+import { getTopSongs } from "../api/search";
 export default {
   data() {
     return {
@@ -121,7 +122,7 @@ export default {
     };
   },
   mounted() {
-    this.axios.get("/toplist/detail").then((res) => {
+    getTopSongs().then((res) => {
       console.log(res);
       let list = res.data.list;
       for (let item of list) {

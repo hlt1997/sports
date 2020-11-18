@@ -33,9 +33,9 @@
             },
           }"
         >
-          <div>
+          <div id="container">
             <div class="center">
-              <img :src="item.album.blurPicUrl" alt="" />
+              <img v-lazy.container="item.album.blurPicUrl" alt="" />
             </div>
             <p>
               <span>{{ item.name }}</span
@@ -142,6 +142,7 @@
 }
 </style>
 <script>
+import { getRecommend } from "../api/search.js";
 export default {
   data() {
     return {
@@ -152,15 +153,16 @@ export default {
   },
   // methods() {},
   mounted() {
-    this.axios.get("/recommend/songs").then((res) => {
-      console.log(res);
-      this.data = res.data.recommend;
-    })// 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
+    getRecommend()
+      .then((res) => {
+        console.log(res);
+        this.data = res.data.recommend;
+      }) // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
       .catch((error) => {
         if (error.response) {
           console.log(error.response);
         }
-      });;
+      });
     let date = new Date();
     console.log(date.getMonth());
     console.log(date.getDate());

@@ -31,7 +31,7 @@
     <!-- 验证码 -->
     <div class="code">
       <input type="text" v-model="captcha" placeholder="输入验证码" /><button
-        @click="getCode"
+        @click="code"
       >
         获取验证码
       </button>
@@ -126,6 +126,8 @@ a {
 }
 </style>
 <script>
+import { getCode, getCoded, getPhone, getRegister } from "../api/search";
+
 export default {
   data() {
     return {
@@ -146,18 +148,6 @@ export default {
     };
   },
   methods: {
-    // 获取验证码
-    getCode() {
-      this.axios
-        .get("/captcha/sent?", {
-          params: {
-            phone: this.phone,
-          },
-        })
-        .then((res) => {
-          console.log(res);
-        });
-    },
     // 点击登录 发送请求
 
     // 验证手机号
@@ -177,6 +167,14 @@ export default {
           });
           return false;
         }
+      }
+    },
+    // 获取验证码
+    code() {
+      if (this.handlePhone()) {
+        getCode(this.phone).then((res) => {
+          console.log(res);
+        });
       }
     },
     // 验证昵称
@@ -229,13 +227,7 @@ export default {
     register() {
       // 点击注册时先验证码是否正确
       if (this.captcha.trim() != "") {
-        this.axios
-          .get("/captcha/verify?", {
-            params: {
-              phone: this.phone,
-              captcha: this.captcha,
-            },
-          })
+        getCoded(this.phone, this.captcha)
           .then((res) => {
             console.log(res.data);
             // 当验证码正确时 且 所有输入的内容都返回了true，就像服务器发送请求进行注册
@@ -252,39 +244,34 @@ export default {
               ) {
                 console.log("格式正确");
                 // 验证手机号是否已被占用
-                this.axios
-                  .get("/cellphone/existence/check?", {
-                    params: {
-                      phone: this.phone,
-                    },
-                  })
-                  .then((res) => {
-                    console.log(res.data);
-                    if (res.data.exist == 1) {
-                      console.log("手机号已被占用");
-                      this.$toast({ message: "手机号已被占用" });
-                    } else {
-                      // 如果手机号未被占用就发送请求注册
-                      // 发送注册请求
-                      this.axios
-                        .post("/register/cellphone?", {
-                          phone: this.phone,
-                          password: this.password,
-                          captcha: this.captcha,
-                          nickname: this.nickname,
-                        })
-                        .then((res) => {
-                          console.log("注册成功");
+                getPhone(this.phone).then((res) => {
+                  console.log(res.data);
+                  if (res.data.exist == 1) {
+                    console.log("手机号已被占用");
+                    this.$toast({ message: "手机号已被占用" });
+                  } else {
+                    // 如果手机号未被占用就发送请求注册
+                    // 发送注册请求
+                    getRegister(
+                      this.phone,
+                      this.password,
+                      this.captcha,
+                      this.nickname
+                    )
+                      .then((res) => {
+                        console.log("注册成功");
+                        if (res.data.code == 200) {
                           this.$router.push("/login");
-                        })
-                        // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
-                        .catch((error) => {
-                          if (error.response) {
-                            console.log(error.response);
-                          }
-                        });
-                    }
-                  });
+                        }
+                      })
+                      // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
+                      .catch((error) => {
+                        if (error.response) {
+                          console.log(error.response);
+                        }
+                      });
+                  }
+                });
               }
             }
           })

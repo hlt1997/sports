@@ -134,6 +134,7 @@ a {
 </style>
 <script>
 import MyHeader from "../components/MyHeader.vue";
+import { getPlaylist } from "../api/search.js";
 export default {
   components: { MyHeader },
   data() {
@@ -149,17 +150,11 @@ export default {
     this.mid = this.$route.query.id;
     // console.log(this.mid);
     // 发送请求歌单列表信息
-    this.axios
-      .get("/playlist/detail?", {
-        params: {
-          id: this.mid,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        this.result = res.data.playlist;
-        console.log(this.result);
-      });
+    getPlaylist(this.mid).then((res) => {
+      console.log(res);
+      this.result = res.data.playlist;
+      console.log(this.result);
+    });
   },
 };
 </script>

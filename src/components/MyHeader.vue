@@ -1,37 +1,19 @@
 <template>
-  <div class="search">
-    <input type="text" placeholder="听你想听..." />
-    <button>搜索</button>
+  <div class="header">
+    <mt-header title="听我，云音乐" fixed>
+      <router-link to="/search" slot="right">
+        <mt-button icon="search">搜索</mt-button>
+      </router-link>
+      <mt-button icon="more" slot="left"></mt-button>
+    </mt-header>
   </div>
 </template>
 <style scoped>
-.search {
-  margin: 10px auto;
-  /* text-align: center; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+.header {
+  margin-bottom: 40px;
 }
-.search input {
-  height: 24px;
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid gray;
-  font-size: 14px;
-  background: url("/images/icons/search.png") no-repeat;
-  background-size: 24px;
-  background-position: 225px;
-}
-.search button {
-  /* background-color: #fff; */
-  outline: none;
-  border: none;
-  height: 22px;
-  background-color: rgba(0, 0, 0, 0);
-}
-.search button img {
-  height: 22px;
+.mint-header {
+  background-color: #ff5a4a;
 }
 </style>
 <script>
@@ -39,6 +21,7 @@ export default {
   data() {
     return {
       value: "",
+      result: [],
     };
   },
 };

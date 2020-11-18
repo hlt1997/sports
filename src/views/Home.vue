@@ -16,7 +16,7 @@
         <span>每日推荐</span>
       </li>
       <li>
-        <router-link to=""
+        <router-link to="/playlist"
           ><img src="/images/icons/song.png" alt=""
         /></router-link>
         <span>歌单</span>
@@ -32,7 +32,7 @@
     <ul class="lists">
       <li v-for="(item, index) of result" :key="index">
         <router-link :to="{ path: '/list', query: { id: item.id } }">
-          <img :src="item.picUrl" alt="" />
+          <img v-lazy="item.picUrl" alt="" />
           <span>{{ item.name }}</span>
         </router-link>
       </li>
@@ -94,38 +94,39 @@ a {
 }
 </style>
 <script>
+import { getBanner, getPersonalized, getStatus } from "../api/search.js";
 export default {
   data() {
     return {
       banner_data: [],
       result: [],
+      limit: 8,
     };
   },
   mounted() {
-    this.axios.get("/banner").then((res) => {
-      // console.log(res.data.banners);
+    // 轮播图
+    getBanner().then((res) => {
       this.banner_data = res.data.banners;
     });
-    this.axios.get("/personalized?limit=8").then((res) => {
+    // 推荐歌单
+    getPersonalized(this.limit).then((res) => {
       console.log(res);
       this.result = res.data.result;
     });
     // 判断用户登录状态
-    this.axios
-      .get("/login/status")
+    getStatus()
       .then((res) => {
         console.log(res);
-        if(res.data.code == 200){
+        if (res.data.code == 200) {
           this.$store.commit("logined");
-          localStorage.setItem("isLogined",1)
+          localStorage.setItem("isLogined", 1);
         }
       })
       // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
       .catch((error) => {
         if (error.response) {
           console.log(error.response);
-        }
-         else if (error.request) {
+        } else if (error.request) {
           console.log(error.request);
         } else {
           console.log("Error", error.message);
