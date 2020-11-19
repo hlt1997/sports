@@ -8,10 +8,14 @@ import MintUI from "mint-ui";
 import "mint-ui/lib/style.min.css";
 import MyFooter from "./components/MyFooter.vue";
 import MyHeader from "./components/MyHeader.vue";
+import BackHeader from "./components/BackHeader.vue";
+
 // 注册为Vue的插件
+
 Vue.use(MintUI);
 Vue.component("my-footer", MyFooter);
 Vue.component("my-header", MyHeader);
+Vue.component("back-header", BackHeader);
 Vue.config.productionTip = false;
 axios.defaults.baseURL = "/";
 Vue.prototype.axios = axios;

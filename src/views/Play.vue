@@ -4,8 +4,8 @@
     <div class="bg"></div>
     <!-- 顶部导航 -->
     <div class="nav">
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
+      <router-link to="" slot="left">
+        <mt-button icon="back" @click="$router.back(-1)"></mt-button>
       </router-link>
     </div>
     <!-- 顶部歌曲信息 -->
@@ -39,18 +39,100 @@
     </div>
     <!-- 歌词区域结束 -->
     <!-- 控件区域开始 -->
-    <div class="control">
+    <div class="control" :src="url">
       <!-- controls:控件显示 -->
       <!--  -->
-      <audio ref="player" muted autoplay="autoplay" controls :src="url"></audio>
+      <audio ref="player" muted autoplay="autoplay" :src="url"></audio>
+      <div class="process" id="process">
+        <span id="currentTime">{{ formatTime(currentTime) }}</span>
+        <div class="process-bar">
+          <div class="rdy"></div>
+          <div class="cur" ref="cur">
+            <span id="processBtn" class="process-btn c-btn"></span>
+          </div>
+        </div>
+        <span id="totalTime">{{ formatTime(duration) }}</span>
+      </div>
+      <!-- 播放控制 -->
+      <ul class="paus">
+        <li><img src="/images/icons/like-line.png" alt="" /></li>
+        <li @click="play">
+          <img src="/images/icons/stop.png" alt="" v-if="!paused" />
+          <img src="/images/icons/play.png" alt="" v-else />
+        </li>
+        <li><img src="/images/icons/fen.png" alt="" /></li>
+      </ul>
     </div>
     <!-- 控件区域结束 -->
   </div>
 </template>
 <style scoped>
+/* 控件区域 */
+.process {
+  width: 350px;
+  height: 50px;
+  position: absolute;
+  bottom: 90px;
+  margin: 0px -175px;
+  left: 50%;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+}
+
+.process .process-bar {
+  position: absolute;
+  left: 36px;
+  width: 280px;
+  margin-top: 5px;
+  background-color: #615d5c;
+}
+
+.process-bar .rdy {
+  background-color: #b1adac;
+  height: 2px;
+}
+
+.process-bar .cur {
+  background-color: #fb0d0d;
+  height: 2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* 播放圆点 */
+.c-btn {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  right: 0;
+  top: -4px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+/* 播放时间 */
+#currentTime {
+  position: absolute;
+  top: 0;
+  left: -5px;
+}
+#totalTime {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.paus {
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+  top: -50px;
+  left: 0px;
+}
+/*  */
+
 .active {
   color: red;
-  font-size: 20px;
+  font-size: 18px;
   white-space: nowrap;
 }
 /* 背景图 */
@@ -61,7 +143,7 @@
   background: url("/images/login_bg.jpg") no-repeat;
   background-size: cover;
   /* opacity: 0.5; */
-  /* filter: blur(4px); */
+  filter: blur(4px);
 }
 /* 导航栏 */
 .nav button {
@@ -114,6 +196,7 @@
   /* 在当前容器内可以进行滚动 */
   overflow: scroll;
   font-family: "Bahnschrift Light";
+  font-size: 14px;
 }
 .lrc {
   width: 100%;
@@ -129,6 +212,7 @@
   /* margin: 10px; */
 }
 </style>
+
 <script>
 import { getSong, getLyric } from "../api/search.js";
 export default {
@@ -146,6 +230,8 @@ export default {
       currentTime: 0,
       // 保存总时长
       duration: 0,
+      // 媒体是否暂停
+      paused: false,
     };
   },
   mounted() {
@@ -220,15 +306,46 @@ export default {
     });
   },
   methods: {
+    /**
+     * 实现媒体的播放/暂停
+     */
+    play() {
+      let paus = this.$refs.player;
+      // console.log(this.$refs.player.paused);
+      //无论正常的暂停还是播放完毕造成的暂停，
+
+      if (paus.paused || paus.ended) {
+        // 对象播放
+        paus.play();
+      } else {
+        // 对象暂停
+        paus.pause();
+      }
+      this.paused = paus.paused;
+    },
+    // 转化秒格式 为00:00
+    formatTime(s) {
+      if (s == null || s == "" || isNaN(s)) {
+        return "00:00";
+      }
+      var i = 0,
+        s = Math.floor(s);
+      i = parseInt(s / 60);
+      s = parseInt(s % 60);
+      i < 10 && (i = "0" + i);
+      s < 10 && (s = "0" + s);
+      return i + ":" + s;
+    },
     // 利用ref属性获取标签的当前播放时长
     addEventHandle() {
       this.$refs.player.addEventListener("timeupdate", () => {
         this.currentTime = this.$refs.player.currentTime;
+        this.duration = this.$refs.player.duration;
+        this.$refs.cur.style.width =
+          (350 * this.currentTime) / this.duration + "px";
       });
       // 获取当前歌曲的总时长
-      this.$refs.player.addEventListener("canplay", () => {
-        this.duration = this.$refs.player.duration;
-      });
+      // this.$refs.player.addEventListener("canplay", () => {});
     },
     // 该方法在歌词显示标签内调用，控制歌词滚动
     scrollLRC(index) {

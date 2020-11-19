@@ -2,10 +2,7 @@
   <div class="songs">
     <!-- 顶部导航容器开始 -->
     <div class="nav">
-      <my-header></my-header>
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
-      </router-link>
+      <back-header></back-header>
     </div>
     <!-- 顶部导航结束 -->
     <!--  背景图片区域开始 -->
@@ -33,9 +30,9 @@
             },
           }"
         >
-          <div id="container">
+          <div>
             <div class="center">
-              <img v-lazy.container="item.album.blurPicUrl" alt="" />
+              <img v-lazy="item.album.blurPicUrl" alt="" />
             </div>
             <p>
               <span>{{ item.name }}</span
@@ -88,7 +85,7 @@
 .time {
   color: #fff;
   font-family: "Bahnschrift Light";
-  margin-top: 40px;
+  margin-top: 80px;
   margin-left: 20px;
 }
 .time > span:first-child {
@@ -101,7 +98,7 @@
 /* 歌单列表容器 */
 .list_music {
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 50px;
   background: #fff;
   border-radius: 20px 20px 0 0;
 }

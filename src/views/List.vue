@@ -1,16 +1,11 @@
 <template>
   <div class="list">
     <!-- 顶部导航容器开始 -->
-    <div class="nav">
-      <my-header></my-header>
-      <router-link to="/" slot="left">
-        <mt-button icon="back"></mt-button>
-      </router-link>
-    </div>
+    <back-header></back-header>
     <!-- 顶部导航结束 -->
     <!--  背景图片区域开始 -->
     <div class="bg">
-      <img :src="result.coverImgUrl" alt="" />
+      <img v-lazy="result.coverImgUrl" alt="" />
       <h1>{{ result.name }}</h1>
     </div>
     <!-- 背景图片区域结束 -->
@@ -47,31 +42,12 @@
   </div>
 </template>
 <style scoped>
-/* 顶部导航 */
-.nav {
-  position: relative;
-}
-.nav button {
-  background: rgba(0, 0, 0, 0);
-}
-/* 引入的组件 */
-.search {
-  margin-left: 20px;
-}
-
-/* 顶部返回按钮 */
-.nav > a {
-  position: absolute;
-  left: 0;
-  top: -5px;
-  margin-right: 20px;
-}
 /* 顶部 背景图 */
 .bg {
   z-index: -100;
 }
 .bg img {
-  /* background: url('result.coverImgUrl'); */
+  margin-top: 39px;
   width: 100%;
   opacity: 0.5;
   position: absolute;
@@ -135,8 +111,9 @@ a {
 <script>
 import MyHeader from "../components/MyHeader.vue";
 import { getPlaylist } from "../api/search.js";
+import BackHeader from "../components/BackHeader.vue";
 export default {
-  components: { MyHeader },
+  components: { MyHeader, BackHeader },
   data() {
     return {
       // 保存从歌单传来的id

@@ -98,3 +98,13 @@ export function getStatus() {
   const url = "/login/status";
   return axios.get(url);
 }
+// 获取用户信息
+export function getUserinfo(uid) {
+  const url = `/user/binding?uid=${uid}`;
+  return axios.get(url);
+}
+// 获取账号信息 （需登录）
+export function getUserSubcount() {
+  const url = "/user/subcount";
+  return axios.get(url);
+}

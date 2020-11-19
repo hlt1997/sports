@@ -29,7 +29,13 @@
       </li>
     </ul>
     <h3>推荐歌单</h3>
-    <ul class="lists">
+    <!-- 下拉加载更多 距底部20像素开始加载 -->
+    <ul
+      class="lists"
+      infinite-scroll-distance="20"
+      v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="busy"
+    >
       <li v-for="(item, index) of result" :key="index">
         <router-link :to="{ path: '/list', query: { id: item.id } }">
           <img v-lazy="item.picUrl" alt="" />
@@ -94,12 +100,17 @@ a {
 }
 </style>
 <script>
-import { getBanner, getPersonalized, getStatus } from "../api/search.js";
+import { getBanner, getPersonalized } from "../api/search.js";
 export default {
   data() {
     return {
+      // 轮播图
       banner_data: [],
+      // 歌单数据
       result: [],
+      // 是否禁用下拉刷新
+      busy: false,
+      // 歌单个数参数 首次加载8个
       limit: 8,
     };
   },
@@ -109,35 +120,32 @@ export default {
       this.banner_data = res.data.banners;
     });
     // 推荐歌单
+
     getPersonalized(this.limit).then((res) => {
       console.log(res);
       this.result = res.data.result;
     });
-    // 判断用户登录状态
-    getStatus()
-      .then((res) => {
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$store.commit("logined");
-          localStorage.setItem("isLogined", 1);
-        }
-      })
-      // 当返回结果axios请求失败，获取后端接口返回的状态码及错误信息
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-        } else if (error.request) {
-          console.log(error.request);
-        } else {
-          console.log("Error", error.message);
-        }
-        console.log(error.config);
-      });
   },
-  // methods:{
-  //   changed(){
-  //     this
-  //   }
-  // }
+  methods: {
+    loadMore() {
+      // 每次下拉加载4条数据
+      this.$indicator.open({
+        text: "加载中...",
+        spinnerType: "double-bounce",
+      });
+      this.limit += 4;
+      //此时的真正作用是：现在已经触发了滚动方法,既使现在再次进行
+      //滚动范围也不再触发滚动方法了
+      this.busy = true;
+      getPersonalized(this.limit).then((res) => {
+        // console.log(res);
+        this.result = res.data.result;
+        //真正的作用是：上一次的请求已经处理完成了
+        //如果现在再次进行滚动范围，则仍然要触发滚动方法
+        this.busy = false;
+        this.$indicator.close();
+      });
+    },
+  },
 };
 </script>
