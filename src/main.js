@@ -10,6 +10,10 @@ import MyFooter from "./components/MyFooter.vue";
 import MyHeader from "./components/MyHeader.vue";
 import BackHeader from "./components/BackHeader.vue";
 
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+
+Vue.use(ElementUI);
 // 注册为Vue的插件
 
 Vue.use(MintUI);

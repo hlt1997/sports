@@ -12,7 +12,7 @@
       <h2>官方榜</h2>
       <li v-for="(item, index) of result" :key="index">
         <router-link :to="{ path: '/list', query: { id: item.id } }">
-          <img :src="item.coverImgUrl" alt="" />
+          <img v-lazy="item.coverImgUrl" alt="" />
           <span class="update">{{ item.updateFrequency }}</span>
           <div>
             <div v-for="(music, i) of item.tracks" :key="i">

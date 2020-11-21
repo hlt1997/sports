@@ -4,9 +4,8 @@
     <div class="bg"></div>
     <!-- 顶部导航 -->
     <div class="nav">
-      <router-link to="" slot="left">
-        <mt-button icon="back" @click="$router.back(-1)"></mt-button>
-      </router-link>
+      <mt-button icon="back" @click="$router.back(-1)"></mt-button>
+      <mt-button><img src="/images/icons/fen.png" alt=""/></mt-button>
     </div>
     <!-- 顶部歌曲信息 -->
     <div class="info">
@@ -43,90 +42,65 @@
       <!-- controls:控件显示 -->
       <!--  -->
       <audio ref="player" muted autoplay="autoplay" :src="url"></audio>
-      <div class="process" id="process">
-        <span id="currentTime">{{ formatTime(currentTime) }}</span>
-        <div class="process-bar">
-          <div class="rdy"></div>
-          <div class="cur" ref="cur">
-            <span id="processBtn" class="process-btn c-btn"></span>
-          </div>
-        </div>
-        <span id="totalTime">{{ formatTime(duration) }}</span>
+
+      <div class="slider">
+        <el-slider
+          v-model="currentTime"
+          :min="0"
+          :show-tooltip="false"
+          :max="duration"
+          :step="1"
+          @input="seek"
+        >
+          <div slot="left">{{ formatTime(currentTime) }}</div>
+          <div slot="end">{{ formatTime(duration) }}</div>
+        </el-slider>
       </div>
+
       <!-- 播放控制 -->
       <ul class="paus">
-        <li><img src="/images/icons/like-line.png" alt="" /></li>
+        <li><img src="/images/icons/loop.png" alt="" /></li>
+        <li><img src="/images/icons/prev.png" alt="" /></li>
+
         <li @click="play">
           <img src="/images/icons/stop.png" alt="" v-if="!paused" />
           <img src="/images/icons/play.png" alt="" v-else />
         </li>
-        <li><img src="/images/icons/fen.png" alt="" /></li>
+        <li><img src="/images/icons/next.png" alt="" /></li>
+        <li><img src="/images/icons/menu.png" alt="" /></li>
       </ul>
     </div>
     <!-- 控件区域结束 -->
   </div>
 </template>
 <style scoped>
-/* 控件区域 */
-.process {
-  width: 350px;
-  height: 50px;
-  position: absolute;
-  bottom: 90px;
-  margin: 0px -175px;
-  left: 50%;
-  font-size: 12px;
-  font-family: Arial, Helvetica, sans-serif;
+/* 进度条 */
+.slider {
+  position: relative;
+  left: 0;
+  top: -60px;
   color: #fff;
 }
-
-.process .process-bar {
-  position: absolute;
-  left: 36px;
-  width: 280px;
-  margin-top: 5px;
-  background-color: #615d5c;
+.el-slider__button {
+  border: none;
+  background-color: red !important;
+}
+.el-slider__bar {
+  background-color: red !important;
 }
 
-.process-bar .rdy {
-  background-color: #b1adac;
-  height: 2px;
-}
+/* 控件区域 */
 
-.process-bar .cur {
-  background-color: #fb0d0d;
-  height: 2px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-/* 播放圆点 */
-.c-btn {
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  right: 0;
-  top: -4px;
-  background-color: #fff;
-  border-radius: 50%;
-}
-/* 播放时间 */
-#currentTime {
-  position: absolute;
-  top: 0;
-  left: -5px;
-}
-#totalTime {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
 .paus {
   display: flex;
   justify-content: space-around;
   position: relative;
   top: -50px;
   left: 0px;
+}
+.paus li:not(:nth-child(3)) img {
+  width: 28px;
+  height: 28px;
 }
 /*  */
 
@@ -146,6 +120,10 @@
   filter: blur(4px);
 }
 /* 导航栏 */
+.nav {
+  display: flex;
+  justify-content: space-between;
+}
 .nav button {
   background: rgba(0, 0, 0, 0);
   color: #fff;
@@ -306,6 +284,10 @@ export default {
     });
   },
   methods: {
+    // 实现拖动效果
+    seek(e) {
+      this.$refs.player.currentTime = e;
+    },
     /**
      * 实现媒体的播放/暂停
      */
@@ -341,8 +323,8 @@ export default {
       this.$refs.player.addEventListener("timeupdate", () => {
         this.currentTime = this.$refs.player.currentTime;
         this.duration = this.$refs.player.duration;
-        this.$refs.cur.style.width =
-          (350 * this.currentTime) / this.duration + "px";
+        // this.$refs.cur.style.width =
+        //   (350 * this.currentTime) / this.duration + "px";
       });
       // 获取当前歌曲的总时长
       // this.$refs.player.addEventListener("canplay", () => {});
